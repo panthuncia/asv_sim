@@ -363,9 +363,11 @@ void SailPositionController::PreUpdate(
   const double pos = jointPosComp->Data().at(this->dataPtr->jointIndex);
   const double pos_sgn = pos < 0.0 ? -1.0 : 1.0;
 
+  //wing sail doesn't want this
   // Target position will be in [0, pos_max] (positive),
   // we set it to have the same sign as the current position
-  const double pos_target = pos_sgn * this->dataPtr->jointPosCmd;
+  //const double pos_target = pos_sgn * this->dataPtr->jointPosCmd;
+  const double pos_target =this->dataPtr->jointPosCmd;
 
   // Calculate the error
   const double error = pos - pos_target;
@@ -375,11 +377,12 @@ void SailPositionController::PreUpdate(
     // Update force command.
     double force = this->dataPtr->posPid.Update(error, _info.dt);
 
+    //wing sail doesn't want this
     // Only apply tension forces (when |pos_target| < |pos|)
-    if (force * pos_sgn > 0)
-    {
-      force = 0.0;
-    }
+    // if (force * pos_sgn > 0)
+    // {
+    //   force = 0.0;
+    // }
 
     auto forceComp = _ecm.Component<components::JointForceCmd>(joint);
     if (forceComp == nullptr)
